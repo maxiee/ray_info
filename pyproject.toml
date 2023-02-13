@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "ray-info"
+version = "0.1.0"
+description = ""
+authors = ["maxiee <maxieewong@gmail.com>"]
+readme = "README.md"
+packages = [{include = "ray_info"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+playwright = "^1.30.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
