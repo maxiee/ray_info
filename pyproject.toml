@@ -9,6 +9,7 @@ packages = [{include = "ray_info"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 playwright = "^1.30.0"
+PyYAML = "^6.0"
 
 
 [tool.poetry.group.dev.dependencies]
