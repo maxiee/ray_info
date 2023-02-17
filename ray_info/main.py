@@ -1,4 +1,5 @@
 from playwright.sync_api import sync_playwright
+from ray_info.db import db, Info
 
 from ray_info.rss import parse_feed, read_rss_config
 
@@ -8,6 +9,9 @@ from ray_info.rss import parse_feed, read_rss_config
 #     page.goto("http://playwright.dev")
 #     print(page.title())
 #     browser.close()
+
+db.connect()
+db.create_tables([Info], safe=True)
 
 config = read_rss_config()
 print(str(config))
