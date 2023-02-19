@@ -17,7 +17,10 @@ class MLStripper(HTMLParser):
         return self.text.getvalue()
 
 
-def strip_tags(html):
+def strip_tags(html, limit=None):
     s = MLStripper()
     s.feed(html)
-    return s.get_data()
+    if limit:
+        return s.get_data()[:limit]
+    else:
+        return s.get_data()

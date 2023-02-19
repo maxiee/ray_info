@@ -8,3 +8,5 @@ RSS_CONFIGS = DATA_PATH.joinpath("rss.yaml")
 
 # SQLite 数据库
 DB_PATH = DATA_PATH.joinpath('ray_info.db')
+
+ONE_HOUR = 3600 # 1小时=3600秒

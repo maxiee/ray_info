@@ -2,22 +2,23 @@ from queue import PriorityQueue
 import time
 
 class Task:
-    def __init__(self, name, ts, callback, repeat=False, repeat_period=0) -> None:
+    def __init__(self, name, ts, repeat=False, repeat_period=0) -> None:
         """
         repeat: 是否重复
         repeat_period: 重复周期（单位 秒）
         """
         self.name = name
         self.ts = ts
-        self.callback = callback
         self.repeat = repeat
         self.repeat_period = repeat_period
+    
+    def run(self):
+        pass
     
     def clone(self):
         return Task(
             name=self.name,
             ts=self.ts,
-            callback=self.callback,
             repeat=self.repeat,
             repeat_period=self.repeat_period
         )
