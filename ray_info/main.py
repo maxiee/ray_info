@@ -6,6 +6,10 @@ from ray_info.scheduler.scheduler import Scheduler
 import datetime
 import time
 
+import threading
+
+from ray_info.server.server_main import server_main
+
 # with sync_playwright() as p:
 #     browser = p.chromium.launch()
 #     page = browser.new_page()
@@ -19,6 +23,8 @@ db.create_tables([Info, Record], safe=True)
 scheduler = Scheduler()
 init_rss_config_to_tasks(scheduler)
 
+thread_server = threading.Thread(target=server_main)
+thread_server.start()
 
 while True:
     print('=======================')
