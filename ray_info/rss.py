@@ -14,6 +14,7 @@ class RSSTask(Task):
     def __init__(self, name, url, repeat=False, repeat_period=0) -> None:
         super().__init__(f"RSS任务={name}", time.time() + 5, True, ONE_HOUR * 8)
         self.url = url
+        self.site = name
 
     def run(self):
         if not is_record_need_action(self.name, self.repeat_period):
@@ -36,6 +37,7 @@ class RSSTask(Task):
                 info = Info.create(
                     title=title,
                     updated=updated_datetime,
+                    site=self.site,
                     url=url,
                     description=description,
                 )

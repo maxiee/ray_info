@@ -8,6 +8,7 @@ class Info(Model):
     title = CharField()
     updated = DateTimeField()
     url = CharField()
+    site = CharField()
     description = CharField()
 
     class Meta:
