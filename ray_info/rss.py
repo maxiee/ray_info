@@ -19,18 +19,22 @@ class RSSTask(Task):
         for entry in feed.entries:
             title = entry.title
             updated = entry.updated  # 字符串类型
-            updated_datetime = datetime.datetime.strptime(updated, "%Y-%m-%dT%H:%M:%SZ")
+            updated_datetime = datetime.datetime.strptime(
+                updated, "%a, %d %b %Y %H:%M:%S %z"
+            )
             url = entry.link
             description = strip_tags(entry.summary, limit=128)
 
             try:
                 info = Info.get(Info.url == url)
+                print(f'\t{title=}已存在')
             except DoesNotExist:
                 info = Info.create(
                     title=title,
                     updated=updated_datetime,
                     url=url,
-                    description=description)
+                    description=description,
+                )
 
 
 def read_rss_config():
@@ -41,7 +45,4 @@ def read_rss_config():
 def init_rss_config_to_tasks(scheduler: Scheduler):
     config = read_rss_config()["feeds"]
     for entry in config:
-        scheduler.addTask(RSSTask(
-            entry['name'],
-            entry['url']
-        ))
+        scheduler.addTask(RSSTask(entry["name"], entry["url"]))

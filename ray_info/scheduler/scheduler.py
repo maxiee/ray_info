@@ -1,6 +1,7 @@
 from queue import PriorityQueue
 import time
-
+import heapq
+import datetime
 class Task:
     def __init__(self, name, ts, repeat=False, repeat_period=0) -> None:
         """
@@ -22,6 +23,9 @@ class Task:
             repeat=self.repeat,
             repeat_period=self.repeat_period
         )
+    
+    def __str__(self) -> str:
+        return f"任务: {self.name}"
 
 class Scheduler:
     tasks = PriorityQueue()
@@ -37,9 +41,16 @@ class Scheduler:
             if task.repeat is True:
                 t_new = task.clone()
                 t_new.ts = t_new.ts + t_new.repeat_period
-                self.tasks.put(t_new.ts, t_new)            
+                self.addTask(t_new)            
             return task
         else:
             # 时间未到
-            self.tasks.put(task)
+            self.addTask(task)
             return None
+    
+    def __str__(self) -> str:
+        items = heapq.nsmallest(self.tasks.qsize(), self.tasks.queue)
+        ret = '任务调度队列：\n'
+        for i in items:
+            ret += f'\t[{datetime.datetime.fromtimestamp(i[0]).strftime("%Y-%m-%d %H:%M:%S")}]\t[{i[1]}]'
+        return ret
