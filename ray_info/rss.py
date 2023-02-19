@@ -3,6 +3,7 @@ import yaml
 import feedparser
 import datetime
 from ray_info.db import Info
+from ray_info.scheduler.record.record import is_record_need_action, update_record_latest
 from ray_info.scheduler.scheduler import Scheduler, Task
 import time
 from peewee import DoesNotExist
@@ -15,6 +16,9 @@ class RSSTask(Task):
         self.url = url
 
     def run(self):
+        if not is_record_need_action(self.name, self.repeat_period):
+            print('未到时间间隔，无需重新拉取')
+            return
         feed = feedparser.parse(self.url)
         for entry in feed.entries:
             title = entry.title
@@ -35,6 +39,7 @@ class RSSTask(Task):
                     url=url,
                     description=description,
                 )
+        update_record_latest(self.name)
 
 
 def read_rss_config():

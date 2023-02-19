@@ -12,3 +12,10 @@ class Info(Model):
 
     class Meta:
         database = db
+
+class Record(Model):
+    name = CharField()
+    latest = IntegerField()
+
+    class Meta:
+        database = db
