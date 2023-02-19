@@ -10,6 +10,7 @@ class Info(Model):
     url = CharField()
     site = CharField()
     description = CharField()
+    like = IntegerField()
 
     class Meta:
         database = db
@@ -17,6 +18,15 @@ class Info(Model):
 class Record(Model):
     name = CharField()
     latest = IntegerField()
+
+    class Meta:
+        database = db
+
+class UserDict(Model):
+    word = CharField()
+    freq = IntegerField()
+    tag = CharField()
+    like = IntegerField()
 
     class Meta:
         database = db
