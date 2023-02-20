@@ -41,3 +41,9 @@ def like_word(word: str):
     w = add_word(word)
     w.like = w.like + 1
     w.save()
+
+def get_word(word: str):
+    try:
+        return UserDict.get(UserDict.word == word)
+    except peewee.DoesNotExist:
+        return None
