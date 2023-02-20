@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 import uvicorn
-
 from ray_info.db import Info
+from playhouse.shortcuts import model_to_dict
+import jieba
 
+from ray_info.fenci.fenci import add_word
 
 def server_main():
     app = FastAPI()
@@ -12,13 +14,23 @@ def server_main():
         return "Hello, world!"
 
     @app.get("/info/list")
-    async def info_list(page: int = 1, per_page: int = 20):
-        query = Info.select().order_by(Info.updated.desc())
-        total = query.count()
-        info_list = query.paginate(page, per_page)
-        return {
-            "total": total,
-            "info_list": [info.__dict__["__data__"] for info in info_list],
-        }
-
-    uvicorn.run(app, host="0.0.0.0", port=1127)
+    async def info_list(skip: int = 0, limit: int = 20):
+        query = Info.select().order_by(Info.updated.desc()).offset(skip).limit(limit)
+        ret = []
+        for info in query:
+            d = model_to_dict(info)
+            d['title_fc'] = jieba.cut(info.title)
+            ret.append(d)
+        return ret
+    
+    @app.get('/add_word')
+    async def api_add_word(word: str):
+        d = add_word(word)
+        jieba.add_word(d.word, d.freq, d.tag)
+        return 'ok'
+    
+    @app.get('/cut')
+    async def cut(words: str):
+        return jieba.cut(words)
+        
+    uvicorn.run(app, host="127.0.0.1", port=1127)
