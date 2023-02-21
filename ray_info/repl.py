@@ -1,6 +1,6 @@
-from ray_info.site.weibo.weibo import create_weibo_page, weibo_home_send_text, weibo_home_send_text_with_images
+from ray_info.site.weibo.weibo import create_weibo_page, weibo_get_feed_data, weibo_home_send_text, weibo_home_send_text_with_images
 from playwright.sync_api import sync_playwright, Page, Browser
-
+import json
 
 if __name__ == '__main__':
     with sync_playwright() as p:
@@ -15,6 +15,8 @@ if __name__ == '__main__':
 
             if ret == 'open_weibo':
                 page = create_weibo_page(browser)
+            elif ret == 'feed_data':
+                print(json.dumps(weibo_get_feed_data(page)))
             elif ret == 'send_weibo':
                 content = input('输入微博内容>')
                 weibo_home_send_text(page, content)
