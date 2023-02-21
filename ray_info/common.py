@@ -3,6 +3,8 @@ from pathlib import Path
 # 数据存储目录，更换为你自己的
 DATA_PATH = Path("D:\\SynologyDrive\\ray_info")
 
+WEIBO_STORAGE = DATA_PATH.joinpath('weibo.json')
+
 # 存放 RSS Feed 源
 RSS_CONFIGS = DATA_PATH.joinpath("rss.yaml")
 
