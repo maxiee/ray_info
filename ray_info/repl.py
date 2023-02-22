@@ -16,7 +16,10 @@ if __name__ == '__main__':
             if ret == 'open_weibo':
                 page = create_weibo_page(browser)
             elif ret == 'feed_data':
-                print(json.dumps(weibo_get_feed_data(page)))
+                for i in weibo_get_feed_data(page):
+                    print('==============')
+                    print(i)
+                    print('==============')
             elif ret == 'send_weibo':
                 content = input('输入微博内容>')
                 weibo_home_send_text(page, content)

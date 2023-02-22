@@ -65,7 +65,7 @@ def weibo_get_feed_data(page: Page):
             images.append(image_element.get_attribute('src'))
         # 获取卡片的用户信息
         user_img = card.query_selector(".woo-avatar-img").get_attribute("src")
-        user_name = card.query_selector_all("a")[0].inner_text()
+        user_name = card.query_selector('header').query_selector_all('a')[1].inner_text()
 
         feed_data.append(
             {

@@ -1,3 +1,5 @@
+PlayWright 如何拦截保存图片：https://stackoverflow.com/questions/74913951/how-to-asynchronizely-save-image-with-playwright-in-python
+
 # 通过命令行发送一条微博
 
 ```
