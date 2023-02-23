@@ -9,8 +9,11 @@ class Info(Model):
     updated = DateTimeField()
     url = CharField()
     site = CharField()
+    site_img = CharField()
     description = CharField()
     like = IntegerField()
+    # 图片 url 的 JSON List 字符串
+    images = CharField()
 
     class Meta:
         database = db

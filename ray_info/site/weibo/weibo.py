@@ -1,9 +1,15 @@
+from datetime import datetime
+import json
 import re
 from playwright.sync_api import sync_playwright
 from playwright.sync_api import Browser, Page
 import tempfile
 from ray_info.common import WEIBO_STORAGE
 import pathlib
+import jieba
+from ray_info.db import Info
+from ray_info.fenci.fenci import get_word
+from peewee import DoesNotExist
 
 from ray_info.utils.html_utils import url_to_file_name
 
@@ -97,7 +103,7 @@ def weibo_get_feed_data(page: Page):
                 img_name = url_to_file_name(img_url)
                 temp_path = dir.joinpath(img_name)
                 if temp_path.exists():
-                    images.append(str(temp_path))
+                    images.append(f'file://{temp_path}')
             
         # 获取卡片的用户信息
         user_img = card.query_selector(".woo-avatar-img").get_attribute("src")
@@ -115,6 +121,36 @@ def weibo_get_feed_data(page: Page):
         )
 
     return feed_data
+
+def weibo_save_feed_data(feed_data):
+    for data in feed_data:
+        text = data['text']
+        images = data['images']
+        user_img = data['user_img']
+        user_name = data['user_name']
+
+        cut_ret = jieba.cut(text)
+        like_score = 0
+        for fc in cut_ret:
+            w = get_word(fc)
+            if w != None:
+                    like_score += w.like
+        
+        try:
+            info = Info.get(Info.description == text)
+            print(f'\t微博已存在')
+        except DoesNotExist:
+            info = Info.create(
+                title='',
+                updated=datetime.now(),
+                site=user_name,
+                site_img=user_img,
+                url='',
+                description=text,
+                images=json.dumps(images),
+                like=like_score
+            )
+
 
 
 if __name__ == "__main__":
