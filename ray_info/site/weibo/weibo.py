@@ -1,9 +1,11 @@
-import base64
+import re
 from playwright.sync_api import sync_playwright
 from playwright.sync_api import Browser, Page
-
+import tempfile
 from ray_info.common import WEIBO_STORAGE
-
+from urllib.parse import urlparse
+import os
+import pathlib
 
 def login_weibo():
     with sync_playwright() as p:
@@ -24,6 +26,27 @@ def create_weibo_page(browser: Browser):
     context = browser.new_context(storage_state=str(WEIBO_STORAGE))
     p = context.new_page()
     p.goto("https://weibo.com")
+
+    dir = pathlib.Path(tempfile.gettempdir()).joinpath('ray_info_weibo')
+    dir.mkdir(exist_ok=True)
+    print(f'临时文件目录 {dir=}')
+
+    def img_saver(*args, **kw):
+        try:
+            response = args[0]
+            url = response.url
+            print(f'拦截到请求 {url=}')
+            if re.findall(r'\.png|jpg|gif', url, re.IGNORECASE):
+                print(f'拦截到图片: {url=}')
+                img_name = os.path.basename(urlparse(url).path)
+                p = pathlib.Path(dir).joinpath(img_name)
+                print(p)
+                with open(p, 'wb') as f:
+                    f.write(response.body())
+        except Exception:
+            pass
+
+    p.on('response', img_saver)
     return p
 
 
