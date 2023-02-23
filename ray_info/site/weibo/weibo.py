@@ -3,9 +3,13 @@ from playwright.sync_api import sync_playwright
 from playwright.sync_api import Browser, Page
 import tempfile
 from ray_info.common import WEIBO_STORAGE
-from urllib.parse import urlparse
-import os
 import pathlib
+
+from ray_info.utils.html_utils import url_to_file_name
+
+dir = pathlib.Path(tempfile.gettempdir()).joinpath('ray_info_weibo')
+dir.mkdir(exist_ok=True)
+print(f'临时文件目录 {dir=}')
 
 def login_weibo():
     with sync_playwright() as p:
@@ -27,10 +31,6 @@ def create_weibo_page(browser: Browser):
     p = context.new_page()
     p.goto("https://weibo.com")
 
-    dir = pathlib.Path(tempfile.gettempdir()).joinpath('ray_info_weibo')
-    dir.mkdir(exist_ok=True)
-    print(f'临时文件目录 {dir=}')
-
     def img_saver(*args, **kw):
         try:
             response = args[0]
@@ -38,7 +38,7 @@ def create_weibo_page(browser: Browser):
             print(f'拦截到请求 {url=}')
             if re.findall(r'\.png|jpg|gif', url, re.IGNORECASE):
                 print(f'拦截到图片: {url=}')
-                img_name = os.path.basename(urlparse(url).path)
+                img_name = url_to_file_name(url)
                 p = pathlib.Path(dir).joinpath(img_name)
                 print(p)
                 with open(p, 'wb') as f:
@@ -82,10 +82,21 @@ def weibo_get_feed_data(page: Page):
         # 获取卡片的文本信息
         text = card.inner_text()
         # 获取卡片的图片信息
+        # fixme 现在方法太粗暴了，尽管把头像（0号图片）过滤掉了，但是文本中的表情还是会采下来
+        #       要把范围缩小至图片区内的图片
         images = []
         image_elements = card.query_selector_all("img")
-        for image_element in image_elements:
-            images.append(image_element.get_attribute('src'))
+        for index, image_element in enumerate(image_elements):
+            if index == 0:
+                continue
+            img_url = image_element.get_attribute('src')
+            if img_url is None:
+                continue
+            img_name = url_to_file_name(img_url)
+            temp_path = dir.joinpath(img_name)
+            if temp_path.exists():
+                images.append(str(temp_path))
+            
         # 获取卡片的用户信息
         user_img = card.query_selector(".woo-avatar-img").get_attribute("src")
         user_name = card.query_selector('header').query_selector_all('a')[1].inner_text()

@@ -1,6 +1,10 @@
 from io import StringIO
 from html.parser import HTMLParser
+from urllib.parse import urlparse
+import os
 
+def url_to_file_name(url: str):
+    return os.path.basename(urlparse(url).path)
 
 class MLStripper(HTMLParser):
     def __init__(self):
