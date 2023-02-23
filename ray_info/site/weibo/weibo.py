@@ -85,17 +85,19 @@ def weibo_get_feed_data(page: Page):
         # fixme 现在方法太粗暴了，尽管把头像（0号图片）过滤掉了，但是文本中的表情还是会采下来
         #       要把范围缩小至图片区内的图片
         images = []
-        image_elements = card.query_selector_all("img")
-        for index, image_element in enumerate(image_elements):
-            if index == 0:
-                continue
-            img_url = image_element.get_attribute('src')
-            if img_url is None:
-                continue
-            img_name = url_to_file_name(img_url)
-            temp_path = dir.joinpath(img_name)
-            if temp_path.exists():
-                images.append(str(temp_path))
+        element_picture = card.query_selector('.picture')
+        if element_picture != None:
+            image_elements = element_picture.query_selector_all("img")
+            for index, image_element in enumerate(image_elements):
+                if index == 0:
+                    continue
+                img_url = image_element.get_attribute('src')
+                if img_url is None:
+                    continue
+                img_name = url_to_file_name(img_url)
+                temp_path = dir.joinpath(img_name)
+                if temp_path.exists():
+                    images.append(str(temp_path))
             
         # 获取卡片的用户信息
         user_img = card.query_selector(".woo-avatar-img").get_attribute("src")
