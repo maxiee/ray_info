@@ -101,6 +101,8 @@ def weibo_get_feed_data(page: Page):
             
         # 获取卡片的用户信息
         user_img = card.query_selector(".woo-avatar-img").get_attribute("src")
+        user_img = dir.joinpath(url_to_file_name(user_img))
+
         user_name = card.query_selector('header').query_selector_all('a')[1].inner_text()
 
         feed_data.append(
