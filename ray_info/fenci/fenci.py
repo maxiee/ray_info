@@ -39,7 +39,6 @@ def add_word(word: str, freq: int = 1, tag: str = "n"):
 
 def like_word(word: str):
     w = add_word(word)
-    w.like = w.like + 1
     w.save()
 
 def get_word(word: str):
@@ -47,3 +46,12 @@ def get_word(word: str):
         return UserDict.get(UserDict.word == word)
     except peewee.DoesNotExist:
         return None
+
+def sentence_like_score(sentence: str):
+    cut_ret = jieba.cut(sentence)
+    like_score = 0
+    for fc in cut_ret:
+        w = get_word(fc)
+        if w != None:
+            like_score += w.like
+    return like_score

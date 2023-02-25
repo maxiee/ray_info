@@ -4,7 +4,7 @@ from ray_info.db import Info
 from playhouse.shortcuts import model_to_dict
 import jieba
 
-from ray_info.fenci.fenci import add_word, get_word, like_word
+from ray_info.fenci.fenci import add_word, get_word, like_word, sentence_like_score
 
 def server_main():
     app = FastAPI()
@@ -18,17 +18,16 @@ def server_main():
         query = Info.select().order_by(Info.updated.desc()).offset(skip).limit(limit)
         ret = []
         for info in query:
-            cut_ret = jieba.cut(info.title)
             like_score = 0
-            for fc in cut_ret:
-                w = get_word(fc)
-                if w != None:
-                    like_score += w.like
+            like_score += sentence_like_score(info.title)
+            like_score += sentence_like_score(info.description)
             info.like = like_score
             info.save()
             d = model_to_dict(info)
             d['title_fc'] = jieba.cut(info.title)
+            d['description_fc'] = jieba.cut(info.description)
             ret.append(d)
+        # print(ret)
         return ret
     
     @app.get('/add_word')
