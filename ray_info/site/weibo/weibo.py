@@ -41,9 +41,9 @@ def create_weibo_page(browser: Browser):
         try:
             response = args[0]
             url = response.url
-            print(f'拦截到请求 {url=}')
+            # print(f'拦截到请求 {url=}')
             if re.findall(r'\.png|jpg|gif', url, re.IGNORECASE):
-                print(f'拦截到图片: {url=}')
+                # print(f'拦截到图片: {url=}')
                 img_name = url_to_file_name(url)
                 p = pathlib.Path(dir).joinpath(img_name)
                 print(p)
@@ -85,37 +85,46 @@ def weibo_get_feed_data(page: Page):
 
     feed_data = []
     for card in feed_cards:
-        # 获取卡片的文本信息
-        text = ''
-        text_part_one = card.query_selector('.wbpro-feed-content')
-        text_part_two = card.query_selector('.wbpro-feed-reText')
-        if text_part_one != None:
-            text = text + text_part_one.inner_text()
-        if text_part_two != None:
-            text = text + text_part_two.inner_text()
-        # 获取卡片的图片信息
-        # fixme 当转发的微博的时候，图片抓取不上来
-        images = []
-        element_picture = card.query_selector('.picture')
-        if element_picture != None:
-            image_elements = element_picture.query_selector_all("img")
-            for index, image_element in enumerate(image_elements):
-                if index == 0:
-                    continue
-                img_url = image_element.get_attribute('src')
-                if img_url is None:
-                    continue
-                img_name = url_to_file_name(img_url)
-                temp_path = dir.joinpath(img_name)
-                if temp_path.exists():
-                    images.append(f'file://{temp_path}')
-            
         # 获取卡片的用户信息
         user_img = card.query_selector(".woo-avatar-img").get_attribute("src")
         user_img = dir.joinpath(url_to_file_name(user_img))
 
         user_name = card.query_selector('header').query_selector_all('a')[1].inner_text()
 
+        print('======================================================================')
+        print(f'{user_name=}')
+        print(f'{user_img}')
+
+        # 获取卡片的文本信息
+        text = ''
+        text_part_one = card.query_selector('.wbpro-feed-content')
+        text_part_two = card.query_selector('.wbpro-feed-reText')
+        if text_part_one != None:
+            text = text + text_part_one.inner_text() + '\n\n'
+        if text_part_two != None:
+            text = text + text_part_two.inner_text()
+        # 获取卡片的图片信息
+        images = []
+        element_picture = card.query_selector('.picture')
+        if element_picture == None:
+            print('未发现图片区，请与网页比对')
+        if element_picture != None:
+            image_elements = element_picture.query_selector_all("img")
+            print(f'图片区原始链接数量 = {len(image_elements)}')
+            for index, image_element in enumerate(image_elements):
+                img_url = image_element.get_attribute('src')
+                print(f'图片{index}的 url：{img_url=}')
+                if img_url is None:
+                    continue
+                img_name = url_to_file_name(img_url)
+                temp_path = dir.joinpath(img_name)
+                if temp_path.exists():
+                    images.append(f'file://{temp_path}')
+                else:
+                    print(f'图片缓存未命中 {temp_path=} {img_url=}')
+        if len(images) > 0:
+            print(f'图片列表：{images}')
+        print('======================================================================')
         feed_data.append(
             {
                 "text": text,
