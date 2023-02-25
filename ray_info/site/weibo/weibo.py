@@ -74,7 +74,7 @@ def weibo_home_send_text_with_images(page: Page, content: str, file_paths):
         file_chooser = fc_info.value
         file_chooser.set_files(file_paths)
 
-    page.wait_for_timeout(30000)
+    page.wait_for_timeout(5000)
 
     page.get_by_text("发送").click()
 
@@ -86,10 +86,15 @@ def weibo_get_feed_data(page: Page):
     feed_data = []
     for card in feed_cards:
         # 获取卡片的文本信息
-        text = card.inner_text()
+        text = ''
+        text_part_one = card.query_selector('.wbpro-feed-content')
+        text_part_two = card.query_selector('.wbpro-feed-reText')
+        if text_part_one != None:
+            text = text + text_part_one.inner_text()
+        if text_part_two != None:
+            text = text + text_part_two.inner_text()
         # 获取卡片的图片信息
-        # fixme 现在方法太粗暴了，尽管把头像（0号图片）过滤掉了，但是文本中的表情还是会采下来
-        #       要把范围缩小至图片区内的图片
+        # fixme 当转发的微博的时候，图片抓取不上来
         images = []
         element_picture = card.query_selector('.picture')
         if element_picture != None:
