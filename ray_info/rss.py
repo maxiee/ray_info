@@ -11,7 +11,7 @@ from ray_info.utils.html_utils import strip_tags
 
 
 class RSSTask(Task):
-    def __init__(self, name, url, repeat=False, repeat_period=0) -> None:
+    def __init__(self, name, url) -> None:
         super().__init__(f"RSS任务={name}", time.time() + 5, True, ONE_HOUR * 8)
         self.url = url
         self.site = name

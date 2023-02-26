@@ -12,3 +12,4 @@ RSS_CONFIGS = DATA_PATH.joinpath("rss.yaml")
 DB_PATH = DATA_PATH.joinpath('ray_info.db')
 
 ONE_HOUR = 3600 # 1小时=3600秒
+ONE_MINUTE = 60

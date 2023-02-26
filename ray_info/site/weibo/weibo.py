@@ -1,17 +1,20 @@
-from datetime import datetime
 import json
-import re
-from playwright.sync_api import sync_playwright
-from playwright.sync_api import Browser, Page
-import tempfile
-from ray_info.common import WEIBO_STORAGE
 import pathlib
+import re
+import tempfile
+from datetime import datetime
+from time import time
+
 import jieba
+from peewee import DoesNotExist
+from playwright.sync_api import Browser, Page, sync_playwright
+
+from ray_info.common import ONE_MINUTE, WEIBO_STORAGE
 from ray_info.db import Info
 from ray_info.fenci.fenci import get_word
-from peewee import DoesNotExist
-from ray_info.framework.browser.browser_utils import page_move_down
-
+from ray_info.framework.browser.browser_utils import (global_browser,
+                                                      page_move_down)
+from ray_info.scheduler.scheduler import Task
 from ray_info.utils.html_utils import url_to_file_name
 
 dir = pathlib.Path(tempfile.gettempdir()).joinpath('ray_info_weibo')
@@ -174,6 +177,15 @@ def weibo_repeat_save_feed_data_then_scroll(page: Page, n_times = 10):
         page_move_down(page, 2000)
         page.wait_for_timeout(2000)
 
+class WeiboTask(Task):
+    def __init__(self) -> None:
+        super().__init__(f'微博任务', time() + 5, True, ONE_MINUTE * 5)
+        self.page = create_weibo_page(global_browser)
+
+    def run(self):
+        self.page.reload()
+        self.page.wait_for_timeout(3000)
+        weibo_repeat_save_feed_data_then_scroll(self.page)
 
 if __name__ == "__main__":
     login_weibo()

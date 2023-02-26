@@ -34,11 +34,12 @@ def add_word(word: str, freq: int = 1, tag: str = "n"):
         d.save()
         return d
     except peewee.DoesNotExist:
-        d = UserDict.create(word=word, freq=freq, tag=tag, like=1)
+        d = UserDict.create(word=word, freq=freq, tag=tag, like=0)
         return d
 
 def like_word(word: str):
     w = add_word(word)
+    w.like = w.like + 1
     w.save()
 
 def get_word(word: str):
