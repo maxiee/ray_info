@@ -10,6 +10,7 @@ import jieba
 from ray_info.db import Info
 from ray_info.fenci.fenci import get_word
 from peewee import DoesNotExist
+from ray_info.framework.browser.browser_utils import page_move_down
 
 from ray_info.utils.html_utils import url_to_file_name
 
@@ -164,7 +165,14 @@ def weibo_save_feed_data(feed_data):
                 images=json.dumps(images),
                 like=like_score
             )
+            print(f'\t微博保存成功')
 
+def weibo_repeat_save_feed_data_then_scroll(page: Page, n_times = 10):
+    for i in range(n_times):
+        print(f'step {i=}')
+        weibo_save_feed_data(weibo_get_feed_data(page))
+        page_move_down(page, 2000)
+        page.wait_for_timeout(2000)
 
 
 if __name__ == "__main__":

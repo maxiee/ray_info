@@ -1,6 +1,6 @@
 from ray_info.db import Info, Record, UserDict, db
 from ray_info.framework.browser.browser_utils import page_move_down_n_times
-from ray_info.site.weibo.weibo import create_weibo_page, weibo_get_feed_data, weibo_home_send_text, weibo_home_send_text_with_images, weibo_save_feed_data
+from ray_info.site.weibo.weibo import create_weibo_page, weibo_get_feed_data, weibo_home_send_text, weibo_home_send_text_with_images, weibo_repeat_save_feed_data_then_scroll, weibo_save_feed_data
 from playwright.sync_api import sync_playwright, Page, Browser
 import json
 from ray_info.fenci.fenci import init_jieba
@@ -37,8 +37,8 @@ if __name__ == '__main__':
                 content = input('输入微博内容>')
                 img = input('输入图片路径>')
                 weibo_home_send_text_with_images(page, content, [img])
-            elif ret == 'scrolls':
-                page_move_down_n_times(page)
+            elif ret == 'scroll_and_save':
+                weibo_repeat_save_feed_data_then_scroll(page)
             elif ret == 'quit':
                 browser.close()
                 exit(0)
