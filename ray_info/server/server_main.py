@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 import uvicorn
-from ray_info.common import SERVER_BUSY
+from ray_info.common import DB_BUSY, SERVER_BUSY
 from ray_info.db import Info
 from playhouse.shortcuts import model_to_dict
 import jieba
@@ -54,5 +54,9 @@ def server_main():
     async def resume():
         SERVER_BUSY = False
         return "ok"
+    
+    @app.get('/is_db_busy')
+    async def db_busy():
+        return DB_BUSY
 
     uvicorn.run(app, host="127.0.0.1", port=1127)

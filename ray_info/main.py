@@ -3,7 +3,7 @@ import threading
 import time
 
 from playwright.sync_api import sync_playwright
-from ray_info.common import SERVER_BUSY
+from ray_info.common import DB_BUSY, SERVER_BUSY
 
 from ray_info.db import Info, Record, UserDict, db
 from ray_info.fenci.fenci import init_jieba
@@ -43,6 +43,8 @@ while True:
 
     ret = scheduler.getOnTimeTask()
     if ret is not None:
+        DB_BUSY = True
         print(f"执行 {ret.name}")
         ret.run()
+        DB_BUSY = False
     time.sleep(5)

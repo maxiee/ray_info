@@ -15,3 +15,4 @@ ONE_HOUR = 3600 # 1小时=3600秒
 ONE_MINUTE = 60
 
 SERVER_BUSY = False
+DB_BUSY = False
