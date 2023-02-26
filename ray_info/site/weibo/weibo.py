@@ -14,6 +14,7 @@ from ray_info.db import Info
 from ray_info.fenci.fenci import get_word
 from ray_info.framework.browser.browser_utils import (global_browser,
                                                       page_move_down)
+from ray_info.scheduler.record.record import is_record_need_action, update_record_latest
 from ray_info.scheduler.scheduler import Task
 from ray_info.utils.html_utils import url_to_file_name
 
@@ -183,9 +184,13 @@ class WeiboTask(Task):
         self.page = create_weibo_page(global_browser)
 
     def run(self):
+        if not is_record_need_action(self.name, self.repeat_period):
+            print('未到时间间隔，无需重新拉取')
+            return
         self.page.reload()
         self.page.wait_for_timeout(3000)
         weibo_repeat_save_feed_data_then_scroll(self.page)
+        update_record_latest(self.name)
 
 if __name__ == "__main__":
     login_weibo()

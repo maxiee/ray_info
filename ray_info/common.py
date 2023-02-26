@@ -1,7 +1,7 @@
 from pathlib import Path
 
 # 数据存储目录，更换为你自己的
-DATA_PATH = Path("D:\\SynologyDrive\\ray_info")
+DATA_PATH = Path("D:\\Ray\\RaySystem\\ray_info")
 
 WEIBO_STORAGE = DATA_PATH.joinpath('weibo.json')
 
@@ -13,3 +13,5 @@ DB_PATH = DATA_PATH.joinpath('ray_info.db')
 
 ONE_HOUR = 3600 # 1小时=3600秒
 ONE_MINUTE = 60
+
+SERVER_BUSY = False

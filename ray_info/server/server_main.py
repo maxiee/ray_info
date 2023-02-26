@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 import uvicorn
+from ray_info.common import SERVER_BUSY
 from ray_info.db import Info
 from playhouse.shortcuts import model_to_dict
 import jieba
-from db import db_busy
 from ray_info.fenci.fenci import add_word, get_word, like_word, sentence_like_score
 
 def server_main():
@@ -22,9 +22,7 @@ def server_main():
             like_score += sentence_like_score(info.title)
             like_score += sentence_like_score(info.description)
             info.like = like_score
-            if db_busy:
-                print('数据库正忙，略过此次写入')
-                info.save()
+            info.save()
             d = model_to_dict(info)
             d['title_fc'] = jieba.cut(info.title)
             d['description_fc'] = jieba.cut(info.description)
@@ -34,21 +32,27 @@ def server_main():
     
     @app.get('/add_word')
     async def api_add_word(word: str):
-        if db_busy:
-            print('数据库正忙，略过此次写入')
-            d = add_word(word)
-            jieba.add_word(d.word, d.freq, d.tag)
+        d = add_word(word)
+        jieba.add_word(d.word, d.freq, d.tag)
         return 'ok'
     
     @app.get('/like_word')
     async def api_like_word(word: str):
-        if db_busy:
-            print('数据库正忙，略过此次写入')
-            like_word(word)
+        like_word(word)
         return 'ok'
     
     @app.get('/cut')
     async def cut(words: str):
         return jieba.cut(words)
+
+    @app.get('/stop')
+    async def busy():
+        SERVER_BUSY = True
+        return "ok"
+
+    @app.get('/resume')
+    async def resume():
+        SERVER_BUSY = False
+        return "ok"
 
     uvicorn.run(app, host="127.0.0.1", port=1127)

@@ -16,14 +16,6 @@ class Task:
     def run(self):
         pass
     
-    def clone(self):
-        return Task(
-            name=self.name,
-            ts=self.ts,
-            repeat=self.repeat,
-            repeat_period=self.repeat_period
-        )
-    
     def __str__(self) -> str:
         return f"任务: {self.name}"
 
@@ -36,10 +28,12 @@ class Scheduler:
     def getOnTimeTask(self):
         now = time.time()
         ts, task = self.tasks.get()
+        print('===========getOnTimeTask===============')
+        print(f'now - ts = {now - ts}')
         if now >= ts:
             # 时间已到
             if task.repeat is True:
-                t_new = task.clone()
+                t_new = task
                 t_new.ts = t_new.ts + t_new.repeat_period
                 self.addTask(t_new)            
             return task

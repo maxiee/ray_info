@@ -4,8 +4,6 @@ from ray_info.common import DB_PATH
 
 db = SqliteDatabase(DB_PATH)
 
-db_busy = False
-
 class Info(Model):
     title = CharField()
     updated = DateTimeField()

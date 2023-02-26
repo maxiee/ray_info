@@ -3,8 +3,9 @@ import threading
 import time
 
 from playwright.sync_api import sync_playwright
+from ray_info.common import SERVER_BUSY
 
-from ray_info.db import Info, Record, UserDict, db, db_busy
+from ray_info.db import Info, Record, UserDict, db
 from ray_info.fenci.fenci import init_jieba
 from ray_info.rss import init_rss_config_to_tasks, read_rss_config
 from ray_info.scheduler.scheduler import Scheduler
@@ -34,10 +35,14 @@ while True:
     print("=======================")
     print(datetime.datetime.now())
     print(scheduler)
+
+    if SERVER_BUSY:
+        print('PunkOS 访问中，调度器暂停工作')
+        time.sleep(30)
+        continue
+
     ret = scheduler.getOnTimeTask()
     if ret is not None:
         print(f"执行 {ret.name}")
-        db_busy = True
         ret.run()
-        db_busy = False
     time.sleep(5)
